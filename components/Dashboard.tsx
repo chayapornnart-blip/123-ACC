@@ -78,7 +78,7 @@ export const Dashboard: React.FC<Props> = ({ summary }) => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {data.map((entry, index) => (
+                {data.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
