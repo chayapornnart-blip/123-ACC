@@ -5,20 +5,33 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Reconcile Pro</title>
-    <!-- Using Tailwind CDN for simplicity as requested, but in a full production app, 
-         installing tailwindcss via postcss is recommended for better performance optimization -->
+    <!-- Using Tailwind CDN for quick styling as requested -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
-              primary: '#0f172a',
-              accent: '#3b82f6',
+              brand: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                900: '#1e3a8a',
+              },
+              indigo: {
+                900: '#312e81',
+              }
+            },
+            boxShadow: {
+              'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+              'glow': '0 0 15px rgba(59, 130, 246, 0.15)'
             }
           }
         }
@@ -39,7 +52,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900">
+  <body class="bg-gray-50 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

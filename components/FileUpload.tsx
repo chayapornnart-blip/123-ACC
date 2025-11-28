@@ -1,18 +1,24 @@
-import React, { useRef } from 'react';
-import { Upload, FileType } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Upload, FileText, CheckCircle, Landmark, BookOpen } from 'lucide-react';
 
 interface Props {
   label: string;
   onUpload: (content: string) => void;
   fileName?: string;
   color: 'blue' | 'indigo';
+  icon?: 'bank' | 'book';
 }
 
-export const FileUpload: React.FC<Props> = ({ label, onUpload, fileName, color }) => {
+export const FileUpload: React.FC<Props> = ({ label, onUpload, fileName, color, icon }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    processFile(file);
+  };
+
+  const processFile = (file?: File) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -25,16 +31,54 @@ export const FileUpload: React.FC<Props> = ({ label, onUpload, fileName, color }
     }
   };
 
-  const colorClasses = color === 'blue' 
-    ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100' 
-    : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100';
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    processFile(file);
+  };
+
+  const theme = color === 'blue' ? {
+    border: 'border-blue-200',
+    bg: 'bg-blue-50/50',
+    bgHover: 'hover:bg-blue-50',
+    text: 'text-blue-700',
+    ring: 'focus-within:ring-blue-500',
+    iconColor: 'text-blue-500'
+  } : {
+    border: 'border-indigo-200',
+    bg: 'bg-indigo-50/50',
+    bgHover: 'hover:bg-indigo-50',
+    text: 'text-indigo-700',
+    ring: 'focus-within:ring-indigo-500',
+    iconColor: 'text-indigo-500'
+  };
+
+  const Icon = icon === 'bank' ? Landmark : (icon === 'book' ? BookOpen : Upload);
 
   return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+    <div className="w-full group">
       <div 
         onClick={() => fileInputRef.current?.click()}
-        className={`relative border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${colorClasses} ${fileName ? 'border-solid' : ''}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`
+          relative overflow-hidden h-32
+          border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer 
+          transition-all duration-300 ease-in-out
+          ${fileName ? 'border-emerald-300 bg-emerald-50/30' : `${theme.border} ${theme.bg} ${theme.bgHover}`}
+          ${isDragging ? 'scale-[1.02] border-solid shadow-md' : ''}
+        `}
       >
         <input 
           type="file" 
@@ -45,15 +89,21 @@ export const FileUpload: React.FC<Props> = ({ label, onUpload, fileName, color }
         />
         
         {fileName ? (
-          <div className="flex items-center space-x-2">
-            <FileType className="w-6 h-6" />
-            <span className="font-semibold truncate max-w-[200px]">{fileName}</span>
+          <div className="flex flex-col items-center animate-in zoom-in duration-300">
+             <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mb-2">
+                <CheckCircle className="w-6 h-6 text-emerald-600" />
+             </div>
+             <p className="text-sm font-semibold text-emerald-800 truncate max-w-[200px]">{fileName}</p>
+             <p className="text-[10px] text-emerald-600 uppercase tracking-wider font-bold mt-1">Ready</p>
           </div>
         ) : (
-          <>
-            <Upload className="w-8 h-8 mb-2 opacity-50" />
-            <span className="text-sm font-medium">Click to upload CSV</span>
-          </>
+          <div className="flex flex-col items-center text-center p-4">
+            <div className={`p-2 rounded-full bg-white shadow-sm mb-3 group-hover:scale-110 transition-transform duration-300`}>
+              <Icon className={`w-5 h-5 ${theme.iconColor}`} />
+            </div>
+            <span className={`text-sm font-medium ${theme.text} mb-1`}>{label}</span>
+            <span className="text-xs text-gray-400">Drag & drop or click</span>
+          </div>
         )}
       </div>
     </div>
